@@ -6,7 +6,6 @@ import requests
 import sqlite3
 from datetime import datetime
 import os
-from datetime import datetime
 
 # Correct datetime adapter registration
 sqlite3.register_adapter(datetime, lambda val: val.isoformat())
@@ -51,6 +50,38 @@ def get_geolocation(ip_address):
         print(f"Geolocation lookup failed: {e}")
         return 'Unknown', 'Unknown'
 
+def send_telegram_notification(visitor_info):
+    # Replace with your Telegram bot token
+    BOT_TOKEN = '7102832474:AAEi07X_rdk45irD7uoyUYyKbVVgiYeaE1M'
+    
+    # Replace with your Telegram chat ID
+    CHAT_ID = '999186130'
+    
+    message = f"""🌐 New Visitor Detected!
+        IP: {visitor_info['ip_address']}
+        Browser: {visitor_info['browser']}
+        OS: {visitor_info['os']}
+        Device: {visitor_info['device_type']}
+        Country: {visitor_info['country']}
+        City: {visitor_info['city']}
+        Referrer: {visitor_info['referrer']}
+        Timestamp: {visitor_info['timestamp']}
+            """
+    
+    url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
+    params = {
+        'chat_id': CHAT_ID,
+        'text': message
+    }
+    
+    try:
+        response = requests.post(url, params=params)
+        print(response.json())
+        return response.json()
+    except Exception as e:
+        print(f"Failed to send Telegram notification: {e}")
+        return None
+
 # Modify log_visitor function
 def log_visitor():
     conn = sqlite3.connect('visitor_tracking.db')
@@ -73,14 +104,28 @@ def log_visitor():
     # Get geolocation
     country, city = get_geolocation(ip_address)
     
+    # Prepare visitor info dictionary
+    visitor_info = {
+        'timestamp': str(timestamp),
+        'ip_address': ip_address,
+        'browser': browser,
+        'os': os,
+        'device_type': device_type,
+        'country': country,
+        'city': city,
+        'referrer': referrer
+    }
+    
+    # Send Telegram notification
+    send_telegram_notification(visitor_info)
+    
     # Insert visitor information
     c.execute('''INSERT INTO visitors 
                  (timestamp, ip_address,  referrer, 
                   country, city, browser, os, device_type) 
-                 VALUES (?, ?, ?, ?, ?, ?,  ?, ?)''', 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', 
               (timestamp, ip_address,  referrer, 
                country, city, browser, os, device_type))
-
     
     # Get total visitor count
     c.execute('SELECT COUNT(*) FROM visitors')
@@ -91,6 +136,7 @@ def log_visitor():
     
     return total_visitors
 
+
 @app.route('/')
 def index():
     # Initialize database if not exists
@@ -100,7 +146,7 @@ def index():
     # Log visitor and get total count
     total_visitors = log_visitor()
     
-    return render_template('index.html', visitor_count=total_visitors)
+    return render_template('index.html')
 
 # Additional route to get visitor statistics
 @app.route('/visitor_stats')
