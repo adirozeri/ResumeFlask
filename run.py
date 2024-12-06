@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for, session
 from functools import wraps
 import hashlib
@@ -10,6 +9,17 @@ import os
 # Correct datetime adapter registration
 sqlite3.register_adapter(datetime, lambda val: val.isoformat())
 sqlite3.register_converter('datetime', lambda val: datetime.fromisoformat(val.decode()))
+
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
+CHAT_ID = os.environ.get('CHAT_ID')
+
+if not ADMIN_USERNAME or not ADMIN_PASSWORD:
+    raise ValueError("Admin credentials not found in environment variables!")
+
+if not BOT_TOKEN or not CHAT_ID:
+    raise ValueError("Telegram credentials not found in environment variables!")
 
 
 app = Flask(__name__)
@@ -52,10 +62,7 @@ def get_geolocation(ip_address):
 
 def send_telegram_notification(visitor_info):
     # Replace with your Telegram bot token
-    BOT_TOKEN = '7102832474:AAEi07X_rdk45irD7uoyUYyKbVVgiYeaE1M'
     
-    # Replace with your Telegram chat ID
-    CHAT_ID = '999186130'
     
     message = f"""🌐 New Visitor Detected!
         IP: {visitor_info['ip_address']}
@@ -76,7 +83,7 @@ def send_telegram_notification(visitor_info):
     
     try:
         response = requests.post(url, params=params)
-        print(response.json())
+        
         return response.json()
     except Exception as e:
         print(f"Failed to send Telegram notification: {e}")
@@ -148,88 +155,12 @@ def index():
     
     return render_template('index.html')
 
-# Additional route to get visitor statistics
-@app.route('/visitor_stats')
-def visitor_stats():
-    conn = sqlite3.connect('visitor_tracking.db')
-    c = conn.cursor()
-    
-    # Get full table of visitors with all details
-    c.execute('''SELECT * FROM visitors ORDER BY timestamp DESC''')
-    full_visitor_table = c.fetchall()
-    
-    # Comprehensive referrer statistics
-    c.execute('''SELECT referrer, 
-                        COUNT(*) as count, 
-                        ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM visitors), 2) as percentage
-                 FROM visitors 
-                 GROUP BY referrer 
-                 ORDER BY count DESC''')
-    referrer_stats = c.fetchall()
-    
-    # Daily visitor breakdown
-    c.execute('''SELECT DATE(timestamp) as date, 
-                        COUNT(*) as daily_visitors,
-                        COUNT(DISTINCT ip_address) as unique_visitors
-                 FROM visitors 
-                 GROUP BY date 
-                 ORDER BY date DESC 
-                 LIMIT 30''')
-    daily_stats = c.fetchall()
-    
-    # Browser breakdown
-    c.execute('''SELECT browser, 
-                        COUNT(*) as count, 
-                        ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM visitors), 2) as percentage
-                 FROM visitors 
-                 GROUP BY browser 
-                 ORDER BY count DESC''')
-    browser_stats = c.fetchall()
-    
-    # OS breakdown
-    c.execute('''SELECT os, 
-                        COUNT(*) as count, 
-                        ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM visitors), 2) as percentage
-                 FROM visitors 
-                 GROUP BY os 
-                 ORDER BY count DESC''')
-    os_stats = c.fetchall()
-    
-    conn.close()
-    
-    return {
-        'full_visitor_table': full_visitor_table,
-        'referrer_stats': referrer_stats,
-        'daily_stats': daily_stats,
-        'browser_stats': browser_stats,
-        'os_stats': os_stats
-    }
-# @app.route('/visitor_dashboard')
-# def visitor_dashboard():
-#     conn = sqlite3.connect('visitor_tracking.db')
-#     c = conn.cursor()
-    
-#     # Get full table of visitors with all details
-#     c.execute('''SELECT * FROM visitors ORDER BY timestamp DESC''')
-#     full_visitor_table = c.fetchall()
-    
-#     # Get column names
-#     c.execute("PRAGMA table_info(visitors)")
-#     columns = [column[1] for column in c.fetchall()]
-    
-#     conn.close()
-    
-#     return render_template('visitor_dashboard.html', 
-#                            columns=columns, 
-#                            visitors=full_visitor_table)
-
 ###login
 # Set a secret key for sessions
 app.secret_key = os.urandom(24)  # Generate a random secret key
 
 # Configuration for admin access
-ADMIN_USERNAME = 'adir'
-ADMIN_PASSWORD = '659698'  # Consider using a more secure method like environment variables
+
 
 def hash_password(password):
     """Hash the password for secure comparison"""
