@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adir Ozeri - Data Analyst</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .job {
+            margin-bottom: 15px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill {
+            background-color: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .download-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #4c5eaf;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .download-btn:hover {
+            background-color: #142368;
+        }
+
+        .publication-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .publication-link:hover {
+            text-decoration: underline;
+            color: #142368;
+        }
+
+        .publication-link i {
+            margin-right: 10px;
+            color: #4c5eaf;
+        }
+
+        @media print {
+            body {
+                font-size: 10pt;
+            }
+
+            .download-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="visitor-counter">
+        Total Visitors: {{ visitor_count }}
+    </div>
+
+    <div class="header">
+        <h1>Adir Ozeri</h1>
+        <p>Data Analyst</p>
+        <p>
+            <i class="fas fa-map-marker-alt contact-icon"></i> Tel Aviv, Israel |
+            <i class="fas fa-phone contact-icon"></i> +972-050-7757088 |
+            <i class="fas fa-envelope contact-icon"></i> adirozeri@gmail.com
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Professional Summary</div>
+        <p>I'm a naturally curious and passionate data analyst with a love for data, statistics, and diving
+            deep into complex problems. My approach to work is thorough and accurate, ensuring every
+            analysis is detailed and reliable. With expertise in Python, SQL, and Power BI, I've
+            developed and automated dashboards, conducted A/B testing, and provided actionable
+            insights into customer behavior and marketing strategies.
+            By collaborating with cross-functional teams, I've supported decision-making processes and
+            ensured data integrity.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Professional Experience</div>
+        <div class="job">
+            <div class="job-header">
+                <strong>Data Analyst - Payoneer</strong>
+                <span>2023</span>
+            </div>
+            <ul>
+                <li>Conducted marketing campaign analysis to evaluate customer retention and engagement</li>
+                <li>Executed A/B tests and interpreted results to optimize marketing strategies</li>
+                <li>Developed interactive dashboards and reports using Power BI</li>
+                <li>Generated actionable insights through data trends and customer behavior analysis</li>
+                <li>Strong SQL skills for data extraction, manipulation, and analysis</li>
+            </ul>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <strong>Data Analyst - Outbrain</strong>
+                <span>2021 - 2022</span>
+            </div>
+            <ul>
+                <li>Enhanced dashboards and automated reports with Python</li>
+                <li>Developed operational dashboards and conducted ad-hoc analysis</li>
+                <li>Collaborated with cross-functional teams and data warehouses</li>
+                <li>Transitioned operational dashboards to scheduled reporting system</li>
+                <li>Collaborated with cross-functional teams, data warehouses, and third-party data sources</li>
+            </ul>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <strong>Application Engineer - OptimalPlus</strong>
+                <span>2017 - 2020</span>
+            </div>
+            <ul>
+                <li>Performed in-depth troubleshooting, including database analysis and product code
+                    reviews to solve complex support issues</li>
+                <li>Provided ongoing support and worked closely with engineers, data scientists, and
+                    analysts</li>
+                <li>Served as a knowledge expert and focal point to the professional services team</li>
+                <li>Managed deployment and migration processes</li>
+                <li>Designed automated testing tools and simulations for deep analysis</li>
+            </ul>
+        </div>
+
+
+        <div class="job">
+            <div class="job-header">
+                <strong>Quality Assurance Engineer - OptimalPlus</strong>
+                <span>2014 - 2017</span>
+            </div>
+            <ul>
+                <li>Led quality assurance for several leading proprietary algorithms</li>
+                <li>Designed automated testing tools and simulations for deep analysis</li>
+                <li>Lectured internally on statistical processes used by the QA team</li>
+                <li>Provided ongoing support and worked closely with engineers, data scientists, and
+                    analysts</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Skills</div>
+        <div class="skills">
+            <span class="skill">SQL</span>
+            <span class="skill">Python</span>
+            <span class="skill">Numpy</span>
+            <span class="skill">Pandas</span>
+            <span class="skill">Matplotlib</span>
+            <span class="skill">SciKitLearn</span>
+            <span class="skill">SciPy</span>
+            <span class="skill">Tensorflow</span>
+            <span class="skill">Power BI</span>
+            <span class="skill">Tableau</span>
+            <span class="skill">Machine Learning</span>
+            <span class="skill">Hypothesis Testing - A/B Testing</span>
+            <span class="skill">Statistical Analysis</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Education</div>
+        <strong>Bachelor's in Mathematics</strong>
+        <p>Ben-Gurion University of the Negev (2008 - 2012)</p>
+    </div>
+    <div class="section">
+        <div class="section-title">Publications</div>
+        <a href="https://www.kaggle.com/code/adirozeri/us-health-insurance-dataset" class="publication-link">
+            <i class="fas fa-chart-bar"></i>US Health Insurance
+        </a>
+        <a href="https://www.kaggle.com/code/adirozeri/fast-food-marketing-analysis" class="publication-link">
+            <i class="fas fa-chart-pie"></i>Fast Food Marketing analysis
+        </a>
+    </div>
+    <div class="section">
+        <div class="section-title">Certifications</div>
+        <ul>
+            <li>Applied Machine Learning in Python (Coursera)</li>
+            <li>Python for Data Science (Coursera)</li>
+            <li>R Programming (Coursera)</li>
+        </ul>
+    </div>
+
+
+
+    <a href="{{ url_for('static', filename='Adir_Ozeri_Data_Analyst.pdf') }}" class="download-btn">Download PDF</a>
+    <script>
+        // Optional: Add print dialog hint
+        window.onafterprint = function () {
+            alert("To save as PDF, choose 'Save as PDF' in your print dialog.");
+        }
+    </script>
+
+</body>
+
+</html>
