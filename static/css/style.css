@@ -25,7 +25,11 @@ body {
     flex: 1;
     text-align: left;
 }
-
+.contact-icon {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
 .header-right {
     flex: 1;
     display: flex;

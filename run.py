@@ -219,6 +219,6 @@ def visitor_dashboard():
 
 ###end login
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=443, ssl_context=('assets\\fullchain.pem', 
-                                                   'assets\\privkey.pem'))
+    app.run(host='0.0.0.0', port=443, ssl_context=('static\\assets\\fullchain.pem', 
+                                                   'static\\assets\\privkey.pem'))
 
