@@ -160,7 +160,21 @@
             alert("To save as PDF, choose 'Save as PDF' in your print dialog.");
         }
     </script>
-
+<script>
+    fetch('/log-client-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            screen: {
+                width: window.screen.width,
+                height: window.screen.height
+            },
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            language: navigator.language,
+            platform: navigator.platform
+        })
+    });
+</script>
 </body>
 
 </html>
