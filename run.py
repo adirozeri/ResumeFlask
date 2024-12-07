@@ -345,8 +345,6 @@ def create_app():
     def get_stats():
         with db.get_connection() as conn:
             c = conn.cursor()
-            
-            # Get hourly visit counts for the last 24 hours
             c.execute('''
                 SELECT 
                     strftime('%Y-%m-%d %H:00:00', timestamp) as hour,
@@ -357,10 +355,31 @@ def create_app():
                 GROUP BY hour
                 ORDER BY hour
             ''')
-            
             hourly_stats = [dict(row) for row in c.fetchall()]
-            
             return jsonify(hourly_stats)
+
+    @app.route('/api/referrer-stats')
+    @login_required
+    def get_referrer_stats():
+        with db.get_connection() as conn:
+            c = conn.cursor()
+            c.execute('''
+                SELECT 
+                    CASE 
+                        WHEN referrer = '' OR referrer IS NULL THEN 'Direct'
+                        ELSE referrer 
+                    END as referrer,
+                    COUNT(*) as count
+                FROM visitors
+                WHERE timestamp > datetime('now', '-24 hours')
+                GROUP BY referrer
+                ORDER BY count DESC
+                LIMIT 5
+            ''')
+            results = c.fetchall()
+            referrer_stats = [{'referrer': row[0], 'count': row[1]} for row in results]
+            return jsonify(referrer_stats)
+    
     
     return app
 

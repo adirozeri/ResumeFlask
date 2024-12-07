@@ -170,3 +170,27 @@ werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'logout
 2024-12-07 21:29:39,605 [INFO] 127.0.0.1 - - [07/Dec/2024 21:29:39] "[32mPOST /login HTTP/1.1[0m" 302 -
 2024-12-07 21:29:39,648 [INFO] 127.0.0.1 - - [07/Dec/2024 21:29:39] "GET /dashboard HTTP/1.1" 200 -
 2024-12-07 21:29:40,000 [INFO] 127.0.0.1 - - [07/Dec/2024 21:29:40] "GET /api/stats HTTP/1.1" 200 -
+2024-12-07 22:53:22,382 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on https://127.0.0.1:443
+ * Running on https://192.168.1.115:443
+2024-12-07 22:53:22,382 [INFO] [33mPress CTRL+C to quit[0m
+2024-12-07 22:53:31,024 [INFO] Visit from 127.0.0.1 (Human) from Local, Localhost
+2024-12-07 22:53:31,054 [INFO] 127.0.0.1 - - [07/Dec/2024 22:53:31] "GET / HTTP/1.1" 200 -
+2024-12-07 22:53:31,624 [INFO] 127.0.0.1 - - [07/Dec/2024 22:53:31] "[36mGET /static/style/style.css HTTP/1.1[0m" 304 -
+2024-12-07 22:53:31,752 [INFO] 127.0.0.1 - - [07/Dec/2024 22:53:31] "[33mPOST /log-client-info HTTP/1.1[0m" 404 -
+2024-12-07 22:58:46,243 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on https://127.0.0.1:443
+ * Running on https://192.168.1.115:443
+2024-12-07 22:58:46,244 [INFO] [33mPress CTRL+C to quit[0m
+2024-12-07 22:58:51,796 [INFO] Visit from 127.0.0.1 (Human) from Local, Localhost
+2024-12-07 22:58:51,855 [INFO] 127.0.0.1 - - [07/Dec/2024 22:58:51] "GET / HTTP/1.1" 200 -
+2024-12-07 22:58:52,730 [INFO] 127.0.0.1 - - [07/Dec/2024 22:58:52] "GET /static/style/style.css HTTP/1.1" 200 -
+2024-12-07 22:58:53,162 [INFO] 127.0.0.1 - - [07/Dec/2024 22:58:53] "[33mPOST /log-client-info HTTP/1.1[0m" 404 -
+2024-12-07 22:58:56,370 [INFO] 127.0.0.1 - - [07/Dec/2024 22:58:56] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+2024-12-07 22:58:56,422 [INFO] 127.0.0.1 - - [07/Dec/2024 22:58:56] "GET /login HTTP/1.1" 200 -
+2024-12-07 22:59:01,372 [INFO] 127.0.0.1 - - [07/Dec/2024 22:59:01] "[32mPOST /login HTTP/1.1[0m" 302 -
+2024-12-07 22:59:01,636 [INFO] 127.0.0.1 - - [07/Dec/2024 22:59:01] "GET /dashboard HTTP/1.1" 200 -
+2024-12-07 22:59:01,979 [INFO] 127.0.0.1 - - [07/Dec/2024 22:59:01] "GET /api/referrer-stats HTTP/1.1" 200 -
+2024-12-07 22:59:02,110 [INFO] 127.0.0.1 - - [07/Dec/2024 22:59:02] "GET /api/stats HTTP/1.1" 200 -
