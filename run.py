@@ -400,9 +400,10 @@ if __name__ == '__main__':
     app = create_app()
     app.run(
         host='0.0.0.0', 
-        port=8000, 
+        port=8000,
         ssl_context=(
             'static/assets/fullchain.pem',
             'static/assets/privkey.pem'
-        )
+        ),
+        debug=True
     )
