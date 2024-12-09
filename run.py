@@ -14,6 +14,15 @@ import json
 from dataclasses import dataclass
 from typing import Optional, Dict, List
 import secrets
+import argparse
+
+# Add this near the top of your file
+def parse_args():
+    parser = argparse.ArgumentParser(description='Run Flask application')
+    parser.add_argument('--debug', action='store_true', help='Run in debug mode')
+    return parser.parse_args()
+
+
 
 # Data classes for type safety and better organization
 @dataclass
@@ -397,13 +406,14 @@ sqlite3.register_converter("datetime", convert_datetime)
 
 
 if __name__ == '__main__':
+    args = parse_args()
     app = create_app()
     app.run(
         host='0.0.0.0', 
-        port=8000,
+        port=5000,
         ssl_context=(
             'static/assets/fullchain.pem',
             'static/assets/privkey.pem'
         ),
-        debug=True
+        debug=args.debug
     )
