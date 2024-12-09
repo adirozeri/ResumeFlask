@@ -130,7 +130,7 @@ class VisitorTracker:
                 maxBytes=1024*1024, 
                 backupCount=5
             )],
-            level=logging.INFO,
+            level=logging.DEBUG,
             format='%(asctime)s [%(levelname)s] %(message)s'
         )
         self.logger = logging.getLogger(__name__)
