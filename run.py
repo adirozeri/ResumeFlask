@@ -389,9 +389,83 @@ def create_app():
             referrer_stats = [{'referrer': row[0], 'count': row[1]} for row in results]
             return jsonify(referrer_stats)
     
+    @app.route('/logs')
+    @login_required
+    def view_logs():
+        page = request.args.get('page', 1, type=int)
+        lines_per_page = 100  # Adjust this number as needed
+        
+        try:
+            with open('visitor_tracking.log', 'r') as f:
+                all_lines = f.readlines()
+                # Reverse lines to show newest first
+                all_lines.reverse()
+                
+                # Calculate pagination
+                total_lines = len(all_lines)
+                total_pages = (total_lines + lines_per_page - 1) // lines_per_page
+                
+                # Get lines for current page
+                start = (page - 1) * lines_per_page
+                end = start + lines_per_page
+                current_lines = all_lines[start:end]
+                
+                log_content = ''.join(current_lines)
+                
+                return render_template(
+                    'logs.html',
+                    log_content=log_content,
+                    current_page=page,
+                    total_pages=total_pages
+                )
+                
+        except FileNotFoundError:
+            return render_template('logs.html', 
+                                log_content="Log file not found",
+                                current_page=1,
+                                total_pages=1)
+        except Exception as e:
+            return render_template('logs.html', 
+                                log_content=f"Error reading log file: {str(e)}",
+                                current_page=1,
+                                total_pages=1)
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return app
 
+def setup_logging():
+    logging.basicConfig(
+        handlers=[RotatingFileHandler(
+            'visitor_tracking.log', 
+            maxBytes=1024*1024,  # 1MB
+            backupCount=5
+        )],
+        level=logging.DEBUG,
+        format='%(asctime)s [%(levelname)s] %(message)s'
+    )
+    return logging.getLogger(__name__)
 
 def adapt_datetime(val: datetime) -> str:
     """Convert datetime to ISO format string for SQLite storage"""

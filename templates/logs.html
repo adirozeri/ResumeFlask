@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Logs</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <div class="min-h-screen p-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Application Logs</h1>
+            <div class="space-x-4">
+                <a href="{{ url_for('dashboard') }}"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Back to Dashboard</a>
+                <a href="{{ url_for('logout') }}"
+                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Logout</a>
+            </div>
+        </div>
+
+        <!-- Log Content -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="overflow-x-auto">
+                <pre class="text-sm font-mono whitespace-pre-wrap break-words">{{ log_content }}</pre>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="mt-6 flex justify-center space-x-2">
+            {% if current_page > 1 %}
+            <a href="{{ url_for('view_logs', page=current_page-1) }}"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                Previous
+            </a>
+            {% endif %}
+
+            <span class="px-4 py-2 bg-gray-100 rounded-md">
+                Page {{ current_page }} of {{ total_pages }}
+            </span>
+
+            {% if current_page < total_pages %} <a href="{{ url_for('view_logs', page=current_page+1) }}"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                Next
+                </a>
+                {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Refresh button -->
+    <div class="fixed bottom-6 right-6">
+        <a href="{{ url_for('view_logs', page=current_page) }}"
+            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow-lg">
+            Refresh Logs
+        </a>
+    </div>
+</body>
+
+</html>
