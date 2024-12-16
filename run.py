@@ -60,6 +60,8 @@ class Config:
         self.DB_PATH = 'visitor_tracking.db'
         self.RATE_LIMIT = 30  # requests per minute
         self.LOG_FILE = 'visitor_tracking.log'
+        self.WHITELISTED_IPS = {'127.0.0.1', '::1', '46.120.215.131','192.168.1.115'}  # Add your IP here
+        self.RATE_LIMIT = 30  # requests per minute
         
         self.validate()
     
@@ -124,33 +126,30 @@ class VisitorTracker:
         self.setup_logging()
     
     def setup_logging(self):
-        logging.basicConfig(
-            handlers=[RotatingFileHandler(
-                self.config.LOG_FILE, 
-                maxBytes=1024*1024, 
-                backupCount=5
-            )],
-            level=logging.DEBUG,
-            format='%(asctime)s [%(levelname)s] %(message)s'
-        )
+        args = parse_args()
+        if args.debug:
+            # For debug mode: Log to terminal
+            logging.basicConfig(
+                level=logging.DEBUG,
+                format='%(asctime)s [%(levelname)s] %(message)s'
+            )
+        else:
+            # For production: Log to file
+            logging.basicConfig(
+                handlers=[RotatingFileHandler(
+                    self.config.LOG_FILE, 
+                    maxBytes=1024*1024, 
+                    backupCount=5
+                )],
+                level=logging.DEBUG,
+                format='%(asctime)s [%(levelname)s] %(message)s'
+            )
         self.logger = logging.getLogger(__name__)
     
-    # def is_rate_limited(self, ip_address: str) -> bool:
-    #     now = datetime.now()
-    #     with self.db.get_connection() as conn:
-    #         c = conn.cursor()
-    #         c.execute('''SELECT COUNT(*) FROM visitors 
-    #                     WHERE ip_address = ? 
-    #                     AND timestamp > datetime('now', '-1 minute')''', 
-    #                  (ip_address,))
-    #         count = c.fetchone()[0]
-    #         return count > self.config.RATE_LIMIT
-    
-
 
     def is_rate_limited(self, ip_address: str, path: str = None) -> bool:
         # Don't rate limit static files
-        if path and path.startswith('/static/'):
+        if ip_address in self.config.WHITELISTED_IPS:
             return False
             
         now = datetime.now()
@@ -213,6 +212,10 @@ class VisitorTracker:
             return 'Unknown', 'Unknown'
     
     def log_visitor(self, request) -> VisitorInfo:
+        # Skip tracking for whitelisted IPs
+        if request.remote_addr in self.config.WHITELISTED_IPS:
+            return None
+    
         start_time = datetime.now()
         
         visitor_info = VisitorInfo(
@@ -321,7 +324,7 @@ def create_app():
     
     @app.route('/')
     def index():
-        visitor_info = tracker.log_visitor(request)
+        visitor_info  = tracker.log_visitor(request)
         return render_template('index.html')
     
     @app.route('/login', methods=['GET', 'POST'])
@@ -483,15 +486,24 @@ def create_app():
     return app
 
 def setup_logging():
-    logging.basicConfig(
-        handlers=[RotatingFileHandler(
-            'visitor_tracking.log', 
-            maxBytes=1024*1024,  # 1MB
-            backupCount=5
-        )],
-        level=logging.DEBUG,
-        format='%(asctime)s [%(levelname)s] %(message)s'
-    )
+    args = parse_args()
+    if args.debug:
+        # For debug mode: Log to terminal
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(asctime)s [%(levelname)s] %(message)s'
+        )
+    else:
+        # For production: Log to file
+        logging.basicConfig(
+            handlers=[RotatingFileHandler(
+                'visitor_tracking.log', 
+                maxBytes=1024*1024,  # 1MB
+                backupCount=5
+            )],
+            level=logging.DEBUG,
+            format='%(asctime)s [%(levelname)s] %(message)s'
+        )
     return logging.getLogger(__name__)
 
 def adapt_datetime(val: datetime) -> str:
@@ -512,10 +524,10 @@ if __name__ == '__main__':
     app.run(
         host='0.0.0.0', 
         port=8000,
-        # ssl_context=(
-        #     'static/assets/fullchain.pem',
-        #     'static/assets/privkey.pem'
-        # ),
+        ssl_context=(
+            'static/assets/fullchain.pem',
+            'static/assets/privkey.pem'
+        ),
         debug=args.debug
     )
 
