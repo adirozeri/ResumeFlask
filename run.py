@@ -532,7 +532,7 @@ if __name__ == '__main__':
     }
     
     # Add SSL context only if ENV is development
-    if os.environ.get('FLASK_ENV') == 'development':
+    if os.environ.get('FLASK_ENV') != 'development':
         config['ssl_context'] = (
             'static/assets/fullchain.pem',
             'static/assets/privkey.pem'
