@@ -56,7 +56,10 @@ class Config:
         self.ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
         self.BOT_TOKEN = os.environ.get('BOT_TOKEN')
         self.CHAT_ID = os.environ.get('CHAT_ID')
+        if not os.environ.get('SECRET_KEY', secrets.token_hex(24)):
+            raise ValueError("SECRET_KEY environment variable must be set")
         self.SECRET_KEY = os.environ.get('SECRET_KEY', secrets.token_hex(24))
+
         self.DB_PATH = 'visitor_tracking.db'
         self.LOG_FILE = 'visitor_tracking.log'
         self.WHITELISTED_IPS = {}#'127.0.0.1', '192.168.1.115'}  # Add your IP here
@@ -148,10 +151,10 @@ class VisitorTracker:
     
 
     def is_rate_limited(self, ip_address: str, path: str = None) -> bool:
-        # Don't rate limit static files
+        # Don't rate limit whitelisted IPs
         if ip_address in self.config.WHITELISTED_IPS:
             return False
-            
+                
         now = datetime.now()
         with self.db.get_connection() as conn:
             c = conn.cursor()
@@ -212,6 +215,10 @@ class VisitorTracker:
             return 'Unknown', 'Unknown'
     
     def log_visitor(self, request) -> VisitorInfo:
+        # Get real IP from X-Forwarded-For or X-Real-IP header
+        ip_address = request.headers.get('X-Forwarded-For', request.headers.get('X-Real-IP', request.remote_addr))
+        if ',' in ip_address:  # X-Forwarded-For can contain multiple IPs
+            ip_address = ip_address.split(',')[0].strip()
         # Skip tracking for whitelisted IPs
         if request.remote_addr in self.config.WHITELISTED_IPS:
             return None
@@ -311,9 +318,12 @@ def create_app(args):
 
     @app.before_request
     def check_rate_limit():
-        ip = request.remote_addr
+        ip_address = request.headers.get('X-Forwarded-For', request.headers.get('X-Real-IP', request.remote_addr))
+        if ',' in ip_address:  # X-Forwarded-For can contain multiple IPs
+            ip_address = ip_address.split(',')[0].strip()
+        
         path = request.path
-        if tracker.is_rate_limited(ip, path):
+        if tracker.is_rate_limited(ip_address, path):
             return 'Rate limit exceeded', 429
     
 
@@ -332,7 +342,7 @@ def create_app(args):
         if request.method == 'POST':
             username = request.form['username']
             password = request.form['password']
-            
+             
             if (username == config.ADMIN_USERNAME and 
                 hashlib.sha256(password.encode()).hexdigest() == 
                 hashlib.sha256(config.ADMIN_PASSWORD.encode()).hexdigest()):
