@@ -518,19 +518,27 @@ sqlite3.register_adapter(datetime, adapt_datetime)
 sqlite3.register_converter("datetime", convert_datetime)
 
 
+import os
+
 if __name__ == '__main__':
     args = parse_args()
     app = create_app()
-    app.run(
-        host='0.0.0.0', 
-        port=8000,
-        ssl_context=(
+    
+    # Base configuration
+    config = {
+        'host': '0.0.0.0',
+        'port': 8000,
+        'debug': args.debug
+    }
+    
+    # Add SSL context only if ENV is development
+    if os.environ.get('FLASK_ENV') == 'development':
+        config['ssl_context'] = (
             'static/assets/fullchain.pem',
             'static/assets/privkey.pem'
-        ),
-        debug=args.debug
-    )
-
+        )
+    
+    app.run(**config)
 
 # from flask import Flask
 
