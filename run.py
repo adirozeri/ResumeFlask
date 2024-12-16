@@ -58,7 +58,6 @@ class Config:
         self.CHAT_ID = os.environ.get('CHAT_ID')
         self.SECRET_KEY = os.environ.get('SECRET_KEY', secrets.token_hex(24))
         self.DB_PATH = 'visitor_tracking.db'
-        self.RATE_LIMIT = 30  # requests per minute
         self.LOG_FILE = 'visitor_tracking.log'
         self.WHITELISTED_IPS = {'127.0.0.1', '::1', '46.120.215.131','192.168.1.115'}  # Add your IP here
         self.RATE_LIMIT = 30  # requests per minute
@@ -120,13 +119,13 @@ class Database:
             c.execute('CREATE INDEX IF NOT EXISTS idx_is_bot ON visitors(is_bot)')
 
 class VisitorTracker:
-    def __init__(self, config: Config, db: Database):
+    def __init__(self, config: Config, db: Database, args):
         self.config = config
         self.db = db
-        self.setup_logging()
+        self.setup_logging(args)
     
-    def setup_logging(self):
-        args = parse_args()
+    def setup_logging(self,args):
+        # args = parse_args()
         if args.debug:
             # For debug mode: Log to terminal
             logging.basicConfig(
@@ -292,10 +291,10 @@ class VisitorTracker:
         
         return visitor_info
 
-def create_app():
+def create_app(args):
     config = Config()
     db = Database(config.DB_PATH)
-    tracker = VisitorTracker(config, db)
+    tracker = VisitorTracker(config, db,args)
     
     app = Flask(__name__)
     app.secret_key = config.SECRET_KEY
@@ -356,7 +355,7 @@ def create_app():
                     COUNT(DISTINCT ip_address) as unique_visitors,
                     SUM(CASE WHEN is_bot THEN 1 ELSE 0 END) as bot_visits,
                     COUNT(DISTINCT CASE WHEN is_bot THEN ip_address END) as unique_bots,
-                    AVG(response_time) as avg_response_time
+                    COALESCE(AVG(response_time), 0) as avg_response_time  
                 FROM visitors
             ''')
             stats = dict(c.fetchone())
@@ -485,26 +484,7 @@ def create_app():
 
     return app
 
-def setup_logging():
-    args = parse_args()
-    if args.debug:
-        # For debug mode: Log to terminal
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s [%(levelname)s] %(message)s'
-        )
-    else:
-        # For production: Log to file
-        logging.basicConfig(
-            handlers=[RotatingFileHandler(
-                'visitor_tracking.log', 
-                maxBytes=1024*1024,  # 1MB
-                backupCount=5
-            )],
-            level=logging.DEBUG,
-            format='%(asctime)s [%(levelname)s] %(message)s'
-        )
-    return logging.getLogger(__name__)
+
 
 def adapt_datetime(val: datetime) -> str:
     """Convert datetime to ISO format string for SQLite storage"""
@@ -522,7 +502,7 @@ import os
 
 if __name__ == '__main__':
     args = parse_args()
-    app = create_app()
+    app = create_app(args)
     
     # Base configuration
     config = {
