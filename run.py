@@ -512,10 +512,10 @@ if __name__ == '__main__':
     app.run(
         host='0.0.0.0', 
         port=8000,
-        ssl_context=(
-            'static/assets/fullchain.pem',
-            'static/assets/privkey.pem'
-        ),
+        # ssl_context=(
+        #     'static/assets/fullchain.pem',
+        #     'static/assets/privkey.pem'
+        # ),
         debug=args.debug
     )
 
