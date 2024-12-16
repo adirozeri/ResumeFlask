@@ -62,7 +62,7 @@ class Config:
 
         self.DB_PATH = 'visitor_tracking.db'
         self.LOG_FILE = 'visitor_tracking.log'
-        self.WHITELISTED_IPS = {}#'127.0.0.1', '192.168.1.115'}  # Add your IP here
+        self.WHITELISTED_IPS = {'127.0.0.1', '46.120.215.131'}  # Add your IP here
         
         self.RATE_LIMIT = 30  # requests per minute
         
