@@ -148,8 +148,8 @@
                 let showRow = true;
 
                 // Filter by visitor type
-                if (visitorType === 'bot' && !isBot) showRow = false;
-                if (visitorType === 'human' && isBot) showRow = false;
+                if (visitorType === 'bot' && isBot) showRow = false;
+                if (visitorType === 'human' && !isBot) showRow = false;
 
                 // Filter by referrer
                 if (referrer && rowReferrer !== referrer) showRow = false;
