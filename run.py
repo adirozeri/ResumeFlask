@@ -220,14 +220,14 @@ class VisitorTracker:
         if ',' in ip_address:  # X-Forwarded-For can contain multiple IPs
             ip_address = ip_address.split(',')[0].strip()
         # Skip tracking for whitelisted IPs
-        if request.remote_addr in self.config.WHITELISTED_IPS:
+        if ip_address in self.config.WHITELISTED_IPS:
             return None
     
         start_time = datetime.now()
         
         visitor_info = VisitorInfo(
             timestamp=start_time,
-            ip_address=request.remote_addr,
+            ip_address=ip_address,
             user_agent=request.user_agent.string,
             referrer=request.referrer or 'Direct',
             country='Unknown',
