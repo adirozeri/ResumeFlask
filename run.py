@@ -135,17 +135,35 @@ class VisitorTracker:
         )
         self.logger = logging.getLogger(__name__)
     
-    def is_rate_limited(self, ip_address: str) -> bool:
+    # def is_rate_limited(self, ip_address: str) -> bool:
+    #     now = datetime.now()
+    #     with self.db.get_connection() as conn:
+    #         c = conn.cursor()
+    #         c.execute('''SELECT COUNT(*) FROM visitors 
+    #                     WHERE ip_address = ? 
+    #                     AND timestamp > datetime('now', '-1 minute')''', 
+    #                  (ip_address,))
+    #         count = c.fetchone()[0]
+    #         return count > self.config.RATE_LIMIT
+    
+
+
+    def is_rate_limited(self, ip_address: str, path: str = None) -> bool:
+        # Don't rate limit static files
+        if path and path.startswith('/static/'):
+            return False
+            
         now = datetime.now()
         with self.db.get_connection() as conn:
             c = conn.cursor()
             c.execute('''SELECT COUNT(*) FROM visitors 
                         WHERE ip_address = ? 
                         AND timestamp > datetime('now', '-1 minute')''', 
-                     (ip_address,))
+                    (ip_address,))
             count = c.fetchone()[0]
             return count > self.config.RATE_LIMIT
-    
+
+
     def detect_bot(self, visitor_info: VisitorInfo) -> tuple[float, str]:
         reasons = []
         confidence = 0.0
@@ -286,11 +304,20 @@ def create_app():
                 return redirect(url_for('login'))
             return f(*args, **kwargs)
         return decorated_function
-    
+    # If you're using a before_request handler:
+
     @app.before_request
-    def before_request():
-        if tracker.is_rate_limited(request.remote_addr):
+    def check_rate_limit():
+        ip = request.remote_addr
+        path = request.path
+        if tracker.is_rate_limited(ip, path):
             return 'Rate limit exceeded', 429
+    
+
+    # @app.before_request
+    # def before_request():
+    #     if tracker.is_rate_limited(request.remote_addr):
+    #         return 'Rate limit exceeded', 429
     
     @app.route('/')
     def index():
