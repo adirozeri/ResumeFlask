@@ -1,4 +1,4 @@
-
+import pandas as pd
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from functools import wraps
 import hashlib
@@ -378,7 +378,10 @@ def create_app(args):
                 LIMIT 50
             ''')
             visitors = [dict(row) for row in c.fetchall()]
-            
+            for visitor in visitors:
+                visitor['timestamp'] = pd.to_datetime(visitor['timestamp']).strftime('%d/%m/%Y %H:%M')
+
+
             return render_template(
                 'dashboard.html',
                 stats=stats,
@@ -524,8 +527,11 @@ if __name__ == '__main__':
     
     # Add SSL context only if ENV is development
     if os.environ.get('SSL_DIRECT') == 'true':
+        
+    
         config['ssl_context'] = (
             'static/assets/fullchain.pem',
             'static/assets/privkey.pem'
         )
+    
     app.run(**config)
